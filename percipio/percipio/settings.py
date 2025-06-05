@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'corsheaders',
+    'tasks',
     'user',
     'rest_framework',
     'rest_framework_simplejwt',
@@ -140,12 +141,24 @@ REST_FRAMEWORK={
     ),
 }
 from datetime import timedelta
+
+#Email Configuration
+import os
+EMAIL_BACKEND="django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST='smtp.gmail.com'
+EMAIL_PORT=587
+EMAIL_HOST_USER= os.environ.get('EMAIL_USER')
+EMAIL_HOST_PASSWORD=os.environ.get('EMAIL_PASS')
+EMAIL_USE_TLS=True
+
+
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),  # Set access token expiry time (15 minutes)
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),     # Set refresh token expiry time (7 days)
     'ROTATE_REFRESH_TOKENS': True,  # Optional: Rotate refresh token on refresh
 }
 
+PASSWORD_RESET_TIMEOUT=900 #15 min
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8080",
     "http://127.0.0.1:9000",

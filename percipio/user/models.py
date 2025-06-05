@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import  AbstractBaseUser, BaseUserManager
+
 # Create your models here.
 class MyUserManager(BaseUserManager):
     def create_user(self, email, name ,user_type, password=None, password2=None):
@@ -51,20 +52,16 @@ class MyUser(AbstractBaseUser):
         return self.email
 
     def has_perm(self, perm, obj=None):
-        "Does the user have a specific permission?"
-        # Simplest possible answer: Yes, always
         return  self.is_admin
 
     def has_module_perms(self, app_label):
-        "Does the user have permissions to view the app `app_label`?"
-        # Simplest possible answer: Yes, always
         return True
 
     @property
     def is_staff(self):
-        "Is the user a member of staff?"
-        # Simplest possible answer: All admins are staff
         return self.is_admin
+    
+
     
     
 
@@ -81,6 +78,7 @@ class Provider(models.Model):
 class Contributor(models.Model):
     user_obj=models.OneToOneField(MyUser, on_delete=models.CASCADE)
     skills=models.TextField(max_length=100)
+    
 
     def __str__(self):
         return self.user_obj.email
