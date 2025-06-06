@@ -1,19 +1,24 @@
 from rest_framework import serializers
-from .models import Project, Task
+from .models import Project, Task, Application
 
 class TaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
-        fields = ['id', 'title', 'description', 'project', 'provider', 'deadline', 'created_at']
-        read_only_fields = ['id', 'provider', 'created_at']
+        fields = ['id', 'title', 'description', 'project', 'provider', 'deadline', 'created_at', 'status']
+        read_only_fields = []
 
 
 class ProjectSerializer(serializers.ModelSerializer):
-    #tasks=TaskSerializer(many=True, read_only=True)
     class Meta:
         model= Project
-        fields= ['id','title','project', 'description' ,'provider',  'created_at', 'status']
-        read_only_fields=['id','status']
-   
+        fields= ['id','title', 'description' ,'provider',  'created_at']
+        read_only_fields=[ 'id', 'provider', 'created_at']
 
+class ApplicationSerializer(serializers.ModelSerializer):
+    contributor_username=serializers.CharField(source='contributor.username', read_only=True)
+    task_title=serializers.CharField(source='task.title', read_only=True)
 
+    class Meta:
+        model= Application
+        fields=['id', 'contrubutor', 'contributor_username', 'task', 'task_title', 'message', 'status', 'applied_at']
+        read_only_fields=['id', 'applied_at', 'status']
