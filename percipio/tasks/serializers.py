@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Project, Task, Application
+from .models import Project, Task, Application, Submission
 
 class TaskSerializer(serializers.ModelSerializer):
     class Meta:
@@ -20,5 +20,11 @@ class ApplicationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model= Application
-        fields=['id', 'contrubutor', 'contributor_username', 'task', 'task_title', 'message', 'status', 'applied_at']
+        fields=['id', 'contributor', 'contributor_username', 'task', 'task_title', 'message', 'status', 'applied_at']
         read_only_fields=['id', 'applied_at', 'status']
+
+class SubmissionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Submission
+        fields=['id', 'conributor', 'task', 'title', 'description', 'submitted_at', 'work_url']
+        read_only_fields=['id', 'task']

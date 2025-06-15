@@ -3,34 +3,28 @@ from rest_framework.views import APIView
 from rest_framework import serializers, status, viewsets, permissions
 from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied
-
-from .models import Project, Task, Application
-from .serializers import ProjectSerializer, TaskSerializer, ApplicationSerializer
+from rest_framework.decorators import action
+from .models import Project, Task, Application, Submission
+from .serializers import ProjectSerializer, TaskSerializer, ApplicationSerializer, SubmissionSerializer
 from user.models import Provider
-
 
 class CanCreateProjectPermission(BasePermission):
     def has_permission(self, request, view):
         return hasattr(request.user, 'provider')
 
-
-# ✅ Project ViewSet
 class ProjectViewSet(viewsets.ModelViewSet):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
-    permission_classes = [CanCreateProjectPermission]
-
+    #permission_classes = [CanCreateProjectPermission]
     def perform_create(self, serializer):
         provider = Provider.objects.get(user_obj=self.request.user)
         title = serializer.validated_data.get('title')
-
         if Project.objects.filter(title=title, provider=provider).exists():
             raise serializers.ValidationError("Project with this title already exists for this provider.")
-        
         serializer.save(provider=provider)
 
 
-# ✅ Task ViewSet (nested under project)
+
 class TaskViewSet(viewsets.ModelViewSet):
     serializer_class = TaskSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -54,7 +48,7 @@ class TaskViewSet(viewsets.ModelViewSet):
         serializer.save(project=project)
 
 
-# ✅ Application ViewSet (nested under task)
+
 class ApplicationViewSet(viewsets.ModelViewSet):
     serializer_class = ApplicationSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -80,3 +74,25 @@ class ApplicationViewSet(viewsets.ModelViewSet):
         instance.save()
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
+
+class SubmissionViewSet(viewsets.ModelViewSet):
+    serializer_class= SubmissionSerializer
+    permission_classes=[permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Submission.objects.filter(
+            task__id= self.kwargs['task_pk'],
+            task__project__id= self.kwargs['project_pk'],
+            task__project__provider__user_obj=self.request.user
+        )
+
+#Contributor functions
+class SelfApplied(viewsets.ModelViewSet):
+    serializer_class= ApplicationSerializer
+    permission_classes=[permissions.IsAuthenticated]
+    
+    def get_queryset(self):
+        return Application.objects.filter(contributor__user_obj=self.request.user)
+    
+    def perform_create(self, serializer):
+        serializer.save()

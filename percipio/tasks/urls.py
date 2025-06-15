@@ -1,10 +1,10 @@
 from django.urls import path, include
-from .views import ProjectViewSet, TaskViewSet, ApplicationViewSet
+from .views import ProjectViewSet, TaskViewSet, ApplicationViewSet, SubmissionViewSet, SelfApplied
 from rest_framework.routers import DefaultRouter
 from rest_framework_nested import routers
 
 router= routers.DefaultRouter()
-
+router.register(r'self_applications', SelfApplied, basename='self_applications' )
 router.register(r'projects', ProjectViewSet, basename='projects')
 #Nested under projects
 projects_router= routers.NestedDefaultRouter(router, r'projects' , lookup='project')
@@ -12,7 +12,8 @@ projects_router.register(r'tasks', TaskViewSet, basename='project-tasks')
 
 #Nested under tasks
 tasks_router= routers.NestedDefaultRouter(projects_router, r'tasks', lookup='task')
-tasks_router.register(r'applications', ApplicationViewSet, basename='task-application')
+tasks_router.register(r'applications', ApplicationViewSet, basename='task-applications')
+tasks_router.register(r'submissions',  SubmissionViewSet, basename='task-submissions')
 
 
 urlpatterns = router.urls + projects_router.urls + tasks_router.urls
