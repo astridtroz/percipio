@@ -32,7 +32,7 @@ class TaskViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return Task.objects.filter(
             project__id=self.kwargs['project_pk'],
-            project__provider__user_obj=self.request.user
+            #project__provider__user_obj=self.request.user
         )
 
     def perform_create(self, serializer):
@@ -47,6 +47,10 @@ class TaskViewSet(viewsets.ModelViewSet):
         
         serializer.save(project=project)
 
+    def get_my_tasks(self,serializer):
+        pass
+
+
 
 
 class ApplicationViewSet(viewsets.ModelViewSet):
@@ -57,7 +61,7 @@ class ApplicationViewSet(viewsets.ModelViewSet):
         return Application.objects.filter(
             task__id=self.kwargs['task_pk'],
             task__project__id=self.kwargs['project_pk'],
-            task__project__provider__user_obj=self.request.user
+            #task__project__provider__user_obj=self.request.user
         )
 
     def update(self, request, *args, **kwargs):
@@ -74,6 +78,9 @@ class ApplicationViewSet(viewsets.ModelViewSet):
         instance.save()
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
+    def perform_create(self, serializer):
+        serializer.save()
+              
 
 class SubmissionViewSet(viewsets.ModelViewSet):
     serializer_class= SubmissionSerializer
@@ -86,13 +93,3 @@ class SubmissionViewSet(viewsets.ModelViewSet):
             task__project__provider__user_obj=self.request.user
         )
 
-#Contributor functions
-class SelfApplied(viewsets.ModelViewSet):
-    serializer_class= ApplicationSerializer
-    permission_classes=[permissions.IsAuthenticated]
-    
-    def get_queryset(self):
-        return Application.objects.filter(contributor__user_obj=self.request.user)
-    
-    def perform_create(self, serializer):
-        serializer.save()

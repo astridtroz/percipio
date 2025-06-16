@@ -30,7 +30,7 @@ class Task(models.Model):
     deadline = models.DateField(null=True, blank=True)
     created_at= models.DateTimeField( default=timezone.now)
     status= models.CharField(max_length=20, choices=STATUS_CHOICES, default='open')
-    contributors= models.ManyToManyField(Contributor, related_name='tasks')
+    contributors= models.ManyToManyField(Contributor, related_name='tasks', null=True)
     price=models.CharField(max_length=250, default=0)
     def __str__(self):
         return f"{self.title} - {self.status}"
