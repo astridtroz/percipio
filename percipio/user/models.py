@@ -40,6 +40,7 @@ class MyUser(AbstractBaseUser):
     )
     name=models.CharField(max_length=100)
     user_type= models.CharField(max_length=20, choices=USER_TYPE_CHOICES)
+    stripe_account_id = models.CharField(max_length=255, blank=True, null=True)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
 
@@ -81,4 +82,4 @@ class Contributor(models.Model):
     
 
     def __str__(self):
-        return self.user_obj.email
+        return f"{self.user_obj.email} --- {self.id}"

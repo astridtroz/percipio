@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'corsheaders',
+    'payments',
     'tasks',
     'user',
     'rest_framework',
@@ -162,6 +163,20 @@ PASSWORD_RESET_TIMEOUT=900 #15 min
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8080",
     "http://127.0.0.1:9000",
+    "https://367b-2401-4900-1f3d-c481-18b9-c111-1d3-4f6f.ngrok-free.app",
 ]
 
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "367b-2401-4900-1f3d-c481-18b9-c111-1d3-4f6f.ngrok-free.app",  # ✅ Add full Ngrok subdomain here
+]
+
+
 AUTH_USER_MODEL='user.MyUser'
+
+
+from decouple import config
+
+STRIPE_SECRET_KEY=config('STRIPE_SECRET_KEY')
+STRIPE_PUBLIC_KEY=config('STRIPE_PUBLIC_KEY')

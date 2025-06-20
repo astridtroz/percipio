@@ -9,7 +9,7 @@ class Project(models.Model):
     description=models.TextField(max_length=255)
     provider=models.ForeignKey(Provider, on_delete=models.CASCADE)
     created_at=models.DateTimeField(default=timezone.now)
-    class meta:
+    class Meta:
         unique_together=('title', 'provider')
     contributors= models.ManyToManyField(Contributor, related_name='contributed_projects')
     def __str__(self):
@@ -30,7 +30,7 @@ class Task(models.Model):
     deadline = models.DateField(null=True, blank=True)
     created_at= models.DateTimeField( default=timezone.now)
     status= models.CharField(max_length=20, choices=STATUS_CHOICES, default='open')
-    contributors= models.ManyToManyField(Contributor, related_name='tasks', null=True)
+    contributor= models.ForeignKey(Contributor,on_delete=models.CASCADE, related_name='tasks', null=True)
     price=models.CharField(max_length=250, default=0)
     def __str__(self):
         return f"{self.title} - {self.status}"
@@ -44,10 +44,10 @@ class Application(models.Model):
     ]
 
     task=models.ForeignKey(Task, on_delete=models.CASCADE, related_name='applications')
-    contributor= models.ForeignKey(Contributor, on_delete=models.CASCADE, related_name='application', null=True, blank=True)
+    contributor= models.ForeignKey(Contributor, on_delete=models.CASCADE, related_name='application')
     message=models.TextField(blank=True, null=True)
     status=models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
-    proposal= models.TextField(blank=True, null=True)
+    
     applied_at=models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -59,7 +59,7 @@ class Application(models.Model):
     
 class Submission(models.Model):
     task=models.ForeignKey(Task, on_delete=models.CASCADE, related_name='submissions')
-    contributor= models.ForeignKey(Contributor, on_delete=models.CASCADE, related_name='submissions',null=True, blank=True)
+    contributor= models.ForeignKey(Contributor, on_delete=models.CASCADE, related_name='submissions')
     project=models.ForeignKey(Project, on_delete=models.CASCADE, related_name='submissions')
     submitted_at= models.DateTimeField(auto_now_add=True)
     workUrl=models.URLField()

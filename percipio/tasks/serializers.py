@@ -21,7 +21,7 @@ class ApplicationSerializer(serializers.ModelSerializer):
     class Meta:
         model= Application
         fields=['id', 'contributor', 'contributor_username', 'task', 'task_title', 'message', 'status', 'applied_at']
-        read_only_fields=['id', 'applied_at']
+        read_only_fields=['id', 'applied_at', 'task', 'contributor']
 
 class SubmissionSerializer(serializers.ModelSerializer):
     class Meta:
