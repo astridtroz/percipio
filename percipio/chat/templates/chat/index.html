@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Chat Test</title>
+</head>
+<body>
+  <h2>Chat Room: room1</h2>
+  <textarea id="chat-log" cols="100" rows="20" readonly></textarea><br>
+  <input id="chat-message-input" type="text" size="100"><br>
+  <button id="chat-message-submit">Send</button>
+
+  <script>
+    const chatSocket = new WebSocket(
+      'ws://' + window.location.host + '/ws/chat/room1/'
+    );
+
+    chatSocket.onmessage = function(e) {
+      const data = JSON.parse(e.data);
+      document.querySelector('#chat-log').value += data.username + ": " + data.message + '\n';
+    };
+
+    document.querySelector('#chat-message-submit').onclick = function(e) {
+      const message = document.querySelector('#chat-message-input').value;
+      chatSocket.send(JSON.stringify({ 'message': message }));
+      document.querySelector('#chat-message-input').value = '';
+    };
+  </script>
+</body>
+</html>

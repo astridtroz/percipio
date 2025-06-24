@@ -76,6 +76,7 @@ TEMPLATES = [
     },
 ]
 
+ASGI_APPLICATION = 'percipio.asgi.application'
 WSGI_APPLICATION = 'percipio.wsgi.application'
 
 
@@ -183,3 +184,13 @@ from decouple import config
 
 STRIPE_SECRET_KEY=config('STRIPE_SECRET_KEY')
 STRIPE_PUBLIC_KEY=config('STRIPE_PUBLIC_KEY')
+
+#setting redis as channel layer
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("localhost", 6379)], 
+        },
+    },
+}
