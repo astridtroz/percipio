@@ -59,10 +59,7 @@ class TaskViewSet(viewsets.ModelViewSet):
         instance.save()
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
-
-    def get_my_tasks(self,serializer):
-        pass
-
+    
 
 
 
@@ -127,5 +124,11 @@ class SubmissionViewSet(viewsets.ModelViewSet):
         )
 
 
-class np:
-    pass
+class ContributorTasksViewset(viewsets.ModelViewSet):
+    serializer_class= TaskSerializer
+    permission_classes=[permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Task.objects.filter(
+            contributor__user_obj=self.request.user
+        )
