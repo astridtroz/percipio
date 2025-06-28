@@ -126,3 +126,6 @@ class SubmissionViewSet(viewsets.ModelViewSet):
             task__project__provider__user_obj=self.request.user
         )
 
+
+class np:
+    pass
