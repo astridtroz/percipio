@@ -7,6 +7,7 @@ from rest_framework.decorators import action
 from .models import Project, Task, Application, Submission, Contributor
 from .serializers import ProjectSerializer, TaskSerializer, ApplicationSerializer, SubmissionSerializer
 from user.models import Provider
+from django.shortcuts import get_object_or_404
 
 class CanCreateProjectPermission(BasePermission):
     def has_permission(self, request, view):
@@ -17,11 +18,12 @@ class ProjectViewSet(viewsets.ModelViewSet):
     serializer_class = ProjectSerializer
     #permission_classes = [CanCreateProjectPermission]
     def perform_create(self, serializer):
-        provider = Provider.objects.get(user_obj=self.request.user)
+        provider = get_object_or_404( Provider, user_obj=self.request.user)
         title = serializer.validated_data.get('title')
         if Project.objects.filter(title=title, provider=provider).exists():
             raise serializers.ValidationError("Project with this title already exists for this provider.")
-        serializer.save(provider=provider)
+        if provider:
+            serializer.save(provider=provider)
 
 
 
@@ -37,15 +39,17 @@ class TaskViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         project = Project.objects.get(id=self.kwargs['project_pk'])
-
+        
         if project.provider.user_obj != self.request.user:
             raise PermissionDenied("You are not the owner of this project.")
+
         
         title = serializer.validated_data['title']
         if Task.objects.filter(project=project, title=title).exists():
             raise serializers.ValidationError("This task already exists for the given project.")
         
-        serializer.save(project=project)
+       
+        serializer.save(project=project, provider=project.provider)
 
     def update(self, request, *args, **kwargs):
         instance= self.get_object()
