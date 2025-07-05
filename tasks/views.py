@@ -25,6 +25,12 @@ class ProjectViewSet(viewsets.ModelViewSet):
         if provider:
             serializer.save(provider=provider)
 
+def usertype(request):
+    if request.user__user_obj in Provider.objects.all():
+        return "provider"
+    else:
+        return "contributor"
+
 
 
 class TaskViewSet(viewsets.ModelViewSet):
@@ -32,10 +38,10 @@ class TaskViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return Task.objects.filter(
-            project__id=self.kwargs['project_pk'],
-            #project__provider__user_obj=self.request.user
-        )
+            return Task.objects.filter(
+                project__id=self.kwargs['project_pk'],
+            )
+
 
     def perform_create(self, serializer):
         project = Project.objects.get(id=self.kwargs['project_pk'])
@@ -91,7 +97,8 @@ class ApplicationViewSet(viewsets.ModelViewSet):
         instance.status = status_to_set
 
         if instance.status == 'approved':
-            instance.task.contributor = instance.contributor_id
+            instance.task.contributor = instance.contributor
+            instance.task.status='in_progress'
             instance.task.save()
 
         instance.save()
