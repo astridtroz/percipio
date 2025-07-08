@@ -133,6 +133,8 @@ class SubmissionViewSet(viewsets.ModelViewSet):
             task__project__id= self.kwargs['project_pk'],
             task__project__provider__user_obj=self.request.user
         )
+    
+    
 
 
 class ContributorTasksViewset(viewsets.ModelViewSet):
@@ -143,3 +145,24 @@ class ContributorTasksViewset(viewsets.ModelViewSet):
         return Task.objects.filter(
             contributor__user_obj=self.request.user
         )
+
+class ContributorSubmissions(viewsets.ModelViewSet):
+    serializer_class= SubmissionSerializer
+    permission_classes=[permissions.IsAuthenticated]
+    
+    def get_queryset(self):
+        task_id= self.kwargs.get('mytask_pk')
+        return Submission.objects.filter(
+            contributor__user_obj=self.request.user,
+            task= get_object_or_404(Task, id=task_id)
+        )
+    def perform_create(self, serializer):
+        contributor= get_object_or_404(Contributor, user_obj=self.request.user)
+        task_id= self.kwargs.get('mytask_pk')
+        print(task_id)
+        task= get_object_or_404(Task, id=task_id)
+        project= task.project
+        task.status="submitted"
+        task.save()
+        serializer.save(contributor=contributor, task_id=task_id, project=project )
+        

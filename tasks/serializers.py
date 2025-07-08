@@ -13,7 +13,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model= Project
         fields= ['id','title', 'description' ,'provider',  'created_at']
-        read_only_fields=[ 'id', 'provider', 'created_at']
+        read_only_fields=[  'provider', 'created_at']
 
 class ApplicationSerializer(serializers.ModelSerializer):
     contributor_username=serializers.CharField(source='contributor.username', read_only=True)
@@ -27,5 +27,6 @@ class ApplicationSerializer(serializers.ModelSerializer):
 class SubmissionSerializer(serializers.ModelSerializer):
     class Meta:
         model=Submission
-        fields=['id', 'conributor', 'task', 'title', 'description', 'submitted_at', 'work_url']
-        read_only_fields=['id', 'task']
+        fields=['id', 'contributor', 'task', 'title', 'description', 'submitted_at', 'workUrl']
+        read_only_fields=['id', 'task','contributor']
+
